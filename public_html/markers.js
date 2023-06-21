@@ -319,8 +319,7 @@ var TypeDesignatorIcons = {
         'C130': 'C130',
         'C30J': 'C130',
         'A400': 'C130',
-        'AN12': 'C130',
-        'B38M': 'C130'
+        'AN12': 'C130'
 };
 
 // Maps ICAO aircraft type description codes (e.g. "L2J") to aircraft icons. This is used if the ICAO type designator (e.g. "B731")
