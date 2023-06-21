@@ -90,6 +90,8 @@ function PlaneObject(icao) {
         this.heard_on_tisb = false;
         this.heard_on_adsr = false;
 
+	this.logged = null;	// OC20210315 to hold logged status supplied in static aircraft json files
+
         // request metadata
         getAircraftData(this.icao).done(function(data) {
                 if ("r" in data) {
@@ -108,6 +110,11 @@ function PlaneObject(icao) {
                         this.wtc = data.wtc;
                 }
 
+		if ("s" in data) {			// OC20210315 handle any logged data supplied (in 's' stncode field)
+			this.logged = data.s;		// OC20210315 handle any logged data supplied (in 's' stncode field)
+			this.registration += data.s;	// OC20210315 handle any logged data supplied (in 's' stncode field)
+		}					// OC20210315 handle any logged data supplied (in 's' stncode field)
+
                 if (this.selected) {
                         refreshSelected();
                 }
@@ -115,6 +122,66 @@ function PlaneObject(icao) {
 }
 
 PlaneObject.prototype.isFiltered = function() {
+
+    // OC20210315 'Logged' aircraft
+    if (displayLogged === false && this.logged !== undefined && this.logged !== null) return true;
+	
+    // OC20210315 'Hidden' aircraft
+    if (displayHidden === false) {
+		// hide helicopters
+		if (this.typeDescription !== null && this.typeDescription === 'H1T') return true;			// OC20230620
+		if (this.typeDescription !== null && this.typeDescription === 'H1P') return true;			// OC20230620
+		if (this.typeDescription !== null && this.typeDescription === 'H2T') return true;			// OC20230620
+		if (this.category !== null && this.category === 'A7') return true;					// OC20230620
+	    	// hide light aircraft
+		if (this.typeDescription !== null && this.typeDescription === 'L1T') return true;			// OC20230620
+		if (this.typeDescription !== null && this.typeDescription === 'L1P') return true;			// OC20230620		
+	
+
+		// NJE/NJU/FFC/JME...
+		if (this.flight != null && this.flight.length > 2) {
+			switch(this.flight.substr(0,3)) {
+				case "NJE":
+				case "NJU":
+				case "FFC":
+				case "JME":
+					return true;
+				default:
+			}
+		}
+
+		// hide unwanted biz jets
+		if (this.icaotype != null) {
+			switch(this.icaotype) {
+				case "B350":
+				case "C25A":
+				case "C25B":
+				case "C510":
+				case "C525":
+				case "C550":
+				case "C56X":
+				case "C68A":
+				case "F2TH":
+				case "F900":
+				case "HDJT":
+				case "PC24":
+					return true;
+				default:
+			}
+		}
+
+		// UK with no registration and either no flight number or a G reg flight number 
+		if (this.icaorange.country != undefined && this.icaorange.country === "United Kingdom" && this.registration === null) {
+			if (this.flight === null) return true;
+			if (this.flight.charAt(0) === 'G' && this.flight.charAt(5) === ' ') return true;
+		}
+		
+		// OC20210315 Always filter out nuisance aircraft from the display
+		if (this.flight === 'TEST1234') return true;
+		if (this.addrtype === 'adsb_icao_nt') return true;
+    }
+    // end OC20210315 changes
+	
     // aircraft type filter
     if (this.filter.aircraftTypeCode) {
         if (this.icaotype === null || (typeof this.icaotype === 'string' && !this.icaotype.toUpperCase().trim().match(this.filter.aircraftTypeCode))) {
@@ -347,6 +414,8 @@ PlaneObject.prototype.getMarkerColor = function() {
         // Emergency squawks override everything else
         if (this.squawk in SpecialSquawks)
                 return SpecialSquawks[this.squawk].markerColor;
+
+	if (this.logged) return 'rgb(224, 224, 224)'; //OC20230619 for logged aircraft
 
         var h, s, l;
 
