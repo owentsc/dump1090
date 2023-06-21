@@ -415,7 +415,7 @@ PlaneObject.prototype.getMarkerColor = function() {
         if (this.squawk in SpecialSquawks)
                 return SpecialSquawks[this.squawk].markerColor;
 
-	if (this.logged) return 'rgb(224, 224, 224)'; //OC20230619 for logged aircraft
+	if (this.logged) return 'rgb(240, 240, 240)'; //OC20230619 for logged aircraft
 
         var h, s, l;
 
