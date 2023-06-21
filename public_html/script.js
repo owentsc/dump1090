@@ -18,6 +18,10 @@ var infoBoxOriginalPosition = {};
 var customAltitudeColors = true;
 var myAdsbStatsSiteUrl = null;
 
+// OC20210315 master global variable controlling whether logged aircraft are displayed & controlling hiding classes of aircraft
+var displayLogged = false;
+var displayHidden = false;
+
 var ADSB_Enabled = true;
 var UAT_Enabled = false;
 
@@ -320,6 +324,21 @@ function initialize() {
 			}
 		});
 
+		// OC20210315 manually flag an aircraft to be treated as logged - this is supported by new optionj button in detailed aircraft info panel
+		 $('#log-button').on('click', function() {
+			if (SelectedPlane !== null) {
+				var thisPlane = Planes[SelectedPlane];
+				if (thisPlane.logged === null) thisPlane.logged = 'manual';
+				thisPlane.selected = null;
+				thisPlane.clearLines();
+				thisPlane.updateMarker();
+				SelectedPlane = null;
+				refreshSelected();
+				refreshHighlighted();
+				$('#selected_infoblock').hide();
+			}
+		});
+
 		// this is a little hacky, but the best, most consitent way of doing this. change the margin bottom of the table container to the height of the overlay
 		$('#selected_infoblock').on('resize', function() {
 			$('#sidebar_canvas').css('margin-bottom', $('#selected_infoblock').height() + 'px');
@@ -362,6 +381,10 @@ function initialize() {
             customAltitudeColors = false;
         }
 
+	// OC20210315 implement new toggle to display / hide logged aircraft
+	$("#logged_toggle_button").click(onToggleLogged);
+	$("#hidden_toggle_button").click(onToggleHidden);
+	
         create_filter_sliders();
 
         $("#aircraft_type_filter_form").submit(onFilterByAircraftType);
@@ -1444,7 +1467,7 @@ function refreshSelected() {
         $('#selected_sitedist').text(format_distance_long(selected.sitedist, DisplayUnits));
         $('#selected_rssi').text(selected.rssi.toFixed(1) + ' dBFS');
         $('#selected_message_count').text(selected.messages);
-        $('#selected_photo_link').html(getFlightAwarePhotoLink(selected.registration));
+        $('#selected_photo_link').text(selected.typeDescription);		// OC20230620 personal customisation rather than 'See Photos' display some useful info after the aircraft registration
         $('#selected_altitude_geom').text(format_altitude_long(selected.alt_geom, selected.geom_rate, DisplayUnits));
         $('#selected_mag_heading').text(format_track_long(selected.mag_heading));
         $('#selected_true_heading').text(format_track_long(selected.true_heading));
@@ -1981,7 +2004,7 @@ function toggleGroupByDataType(switchToggle) {
 
 function toggleAircraftLabels(switchToggle) {
 	if (typeof localStorage['showAircraftLabels'] === 'undefined') {
-		localStorage.setItem('showAircraftLabels', 'deselected');
+		localStorage.setItem('showAircraftLabels', 'selected');			//OC20230619 Personal customisation
 	}
 
 	var showAircraftLabels = localStorage.getItem('showAircraftLabels');
@@ -2121,17 +2144,15 @@ function setColumnVisibility() {
     var mapIsVisible = $("#map_container").is(":visible");
     var infoTable = $("#tableinfo");
 
+    // OC20210315 Personal customisation - my initial column choices...
     var defaultCheckBoxes = [
-        '#icao_col_checkbox',
         '#flag_col_checkbox',
         '#ident_col_checkbox',
-        '#squawk_col_checkbox',
-        '#alt_col_checkbox',
-        '#speed_col_checkbox',
+	'#reg_col_checkbox',
+	'#ac_col_checkbox',
+        '#alt_col_checkbox',       
         '#distance_col_checkbox',
-        '#heading_col_checkbox',
-        '#messages_col_checkbox',
-        '#msg_age_col_checkbox'
+        '#heading_col_checkbox'
     ]
 
     // Show default columns if checkboxes have not been set
@@ -2339,7 +2360,7 @@ function onResetAircraftIdentFilter(e) {
 
 function filterGroundVehicles(switchFilter) {
 	if (typeof localStorage['groundVehicleFilter'] === 'undefined') {
-		localStorage.setItem('groundVehicleFilter' , 'not_filtered');
+		localStorage.setItem('groundVehicleFilter' , 'filtered');	//OC20230619 personal customisation
 	}
 
 	var groundFilter = localStorage.getItem('groundVehicleFilter');
@@ -2376,7 +2397,7 @@ function filterBlockedMLAT(switchFilter) {
 
 function toggleAltitudeChart(switchToggle) {
 	if (typeof localStorage['altitudeChart'] === 'undefined') {
-		localStorage.setItem('altitudeChart','show');
+		localStorage.setItem('altitudeChart','hidden');		//OC20230619 personal customisation
 	}
 
 	var altitudeChartDisplay = localStorage.getItem('altitudeChart');
@@ -2843,4 +2864,17 @@ function toggleTISBAircraft(switchFilter) {
 		$('#tisb_datasource_checkbox').addClass('sourceCheckboxChecked');
 	}
 	localStorage.setItem('sourceTISBFilter', sourceTISBFilter);
+}
+
+// OC20210315 new function to toggle the global variable controlling whether logged aircraft are displayed or not
+function onToggleLogged(e) {
+	displayLogged = (displayLogged === true) ? false : true;
+	if (displayLogged === true) $("#logged_toggle_button").text('Logged+');
+	if (displayLogged === false) $("#logged_toggle_button").text('Logged-');
+}
+// OC20210315 new function to toggle the global variable controlling whether hidden aircraft are displayed or not
+function onToggleHidden(e) {
+	displayHidden = (displayHidden === true) ? false : true;
+	if (displayHidden === true) $("#hidden_toggle_button").text('Hidden+');
+	if (displayHidden === false) $("#hidden_toggle_button").text('Hidden-');
 }
