@@ -21,6 +21,7 @@ var myAdsbStatsSiteUrl = null;
 // OC20210315 master global variable controlling whether logged aircraft are displayed & controlling hiding classes of aircraft
 var displayLogged = false;
 var displayHidden = false;
+var displayA2 = false;
 
 var ADSB_Enabled = true;
 var UAT_Enabled = false;
@@ -384,6 +385,7 @@ function initialize() {
 	// OC20210315 implement new toggle to display / hide logged aircraft
 	$("#logged_toggle_button").click(onToggleLogged);
 	$("#hidden_toggle_button").click(onToggleHidden);
+	$("#A2_toggle_button").click(onToggleA2);
 	
         create_filter_sliders();
 
@@ -2877,4 +2879,10 @@ function onToggleHidden(e) {
 	displayHidden = (displayHidden === true) ? false : true;
 	if (displayHidden === true) $("#hidden_toggle_button").text('Hidden+');
 	if (displayHidden === false) $("#hidden_toggle_button").text('Hidden-');
+}
+// OC20230622 new function to toggle the global variable controlling whether A2 aircraft are displayed or not
+function onToggleA2(e) {
+	displayA2 = (displayA2 === true) ? false : true;
+	if (displayA2 === true) $("#A2_toggle_button").text('A2+');
+	if (displayA2 === false) $("#A2_toggle_button").text('A2-');
 }
