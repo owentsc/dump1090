@@ -144,7 +144,7 @@ PlaneObject.prototype.isFiltered = function() {
     if (displayHidden === false) {
 
 	    // hide unknown category
-	    if (this.category !== null) return true;		// OC20230622
+	    if (this.category === null) return true;		// OC20230622
 
 	    // OC20210315 Always filter out nuisance aircraft from the display
 	    if (this.flight === 'TEST1234') return true;
