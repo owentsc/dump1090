@@ -135,9 +135,9 @@ PlaneObject.prototype.isFiltered = function() {
 		if (this.category !== null && this.category === 'A7') return true;					// OC20230620
 	    	// hide light aircraft
 		if (this.typeDescription !== null && this.typeDescription === 'L1T') return true;			// OC20230620
-		if (this.typeDescription !== null && this.typeDescription === 'L1P') return true;			// OC20230620		
+		if (this.typeDescription !== null && this.typeDescription === 'L1P') return true;			// OC20230620	
+	    	if (this.category !== null && this.category === 'A1') return true;					// OC20230622
 	
-
 		// NJE/NJU/FFC/JME...
 		if (this.flight != null && this.flight.length > 2) {
 			switch(this.flight.substr(0,3)) {
@@ -145,7 +145,7 @@ PlaneObject.prototype.isFiltered = function() {
 				case "NJU":
 				case "FFC":
 				case "JME":
-					return true;
+					//return true;
 				default:
 			}
 		}
@@ -165,20 +165,20 @@ PlaneObject.prototype.isFiltered = function() {
 				case "F900":
 				case "HDJT":
 				case "PC24":
-					return true;
+					//return true;
 				default:
 			}
 		}
 
 		// UK with no registration and either no flight number or a G reg flight number 
 		if (this.icaorange.country != undefined && this.icaorange.country === "United Kingdom" && this.registration === null) {
-			if (this.flight === null) return true;
-			if (this.flight.charAt(0) === 'G' && this.flight.charAt(5) === ' ') return true;
+			//if (this.flight === null) return true;
+			//if (this.flight.charAt(0) === 'G' && this.flight.charAt(5) === ' ') return true;
 		}
 		
 		// OC20210315 Always filter out nuisance aircraft from the display
 		if (this.flight === 'TEST1234') return true;
-		if (this.addrtype === 'adsb_icao_nt') return true;
+		//if (this.addrtype === 'adsb_icao_nt') return true;
     }
     // end OC20210315 changes
 	
