@@ -126,23 +126,29 @@ PlaneObject.prototype.isFiltered = function() {
     // OC20210315 'Logged' aircraft
     if (displayLogged === false && this.logged !== undefined && this.logged !== null) return true;
 
-    // OC20230622 'A2' aircraft
-    if (displayA2 === false) {
-	    if (this.category !== null && this.category === 'A2') return true;					// OC20230622
+    // OC20230622 'A1' aircraft
+    if (displayA1 === false) {
+	    // hide light aircraft
+	    if (this.category !== null && this.category === 'A1') return true;					// OC20230622
+	    if (this.typeDescription !== null && this.typeDescription === 'L1T') return true;			// OC20230620
+	    if (this.typeDescription !== null && this.typeDescription === 'L1P') return true;			// OC20230620	
+
+	    // hide helicopters
+	    if (this.category !== null && this.category === 'A7') return true;					// OC20230620
+	    if (this.typeDescription !== null && this.typeDescription === 'H1T') return true;			// OC20230620
+	    if (this.typeDescription !== null && this.typeDescription === 'H1P') return true;			// OC20230620
+	    if (this.typeDescription !== null && this.typeDescription === 'H2T') return true;			// OC20230620
     }
 	
     // OC20210315 'Hidden' aircraft
     if (displayHidden === false) {
-		// hide helicopters
-		if (this.typeDescription !== null && this.typeDescription === 'H1T') return true;			// OC20230620
-		if (this.typeDescription !== null && this.typeDescription === 'H1P') return true;			// OC20230620
-		if (this.typeDescription !== null && this.typeDescription === 'H2T') return true;			// OC20230620
-		if (this.category !== null && this.category === 'A7') return true;					// OC20230620
-	    	// hide light aircraft
-		if (this.typeDescription !== null && this.typeDescription === 'L1T') return true;			// OC20230620
-		if (this.typeDescription !== null && this.typeDescription === 'L1P') return true;			// OC20230620	
-	    	if (this.category !== null && this.category === 'A1') return true;					// OC20230622
-	
+
+	    // hide unknown category
+	    if (this.category !== null) return true;		// OC20230622
+
+	    // OC20210315 Always filter out nuisance aircraft from the display
+	    if (this.flight === 'TEST1234') return true;
+	       
 		// NJE/NJU/FFC/JME...
 		if (this.flight != null && this.flight.length > 2) {
 			switch(this.flight.substr(0,3)) {
