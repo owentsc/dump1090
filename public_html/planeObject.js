@@ -125,6 +125,11 @@ PlaneObject.prototype.isFiltered = function() {
 
     // OC20210315 'Logged' aircraft
     if (displayLogged === false && this.logged !== undefined && this.logged !== null) return true;
+
+    // OC20230622 'A2' aircraft
+    if (displayA2 === false) {
+	    if (this.category !== null && this.category === 'A2') return true;					// OC20230622
+    }
 	
     // OC20210315 'Hidden' aircraft
     if (displayHidden === false) {
