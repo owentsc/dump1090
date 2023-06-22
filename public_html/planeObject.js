@@ -144,7 +144,7 @@ PlaneObject.prototype.isFiltered = function() {
     if (displayHidden === false) {
 
 	    // hide unknown category
-	    if (this.category === null) return true;		// OC20230622
+	    if (this.category === undefined) return true;		// OC20230622
 
 	    // OC20210315 Always filter out nuisance aircraft from the display
 	    if (this.flight === 'TEST1234') return true;
@@ -187,8 +187,7 @@ PlaneObject.prototype.isFiltered = function() {
 			//if (this.flight.charAt(0) === 'G' && this.flight.charAt(5) === ' ') return true;
 		}
 		
-		// OC20210315 Always filter out nuisance aircraft from the display
-		if (this.flight === 'TEST1234') return true;
+		// OC20210315 filter out other nuisance aircraft from the display
 		//if (this.addrtype === 'adsb_icao_nt') return true;
     }
     // end OC20210315 changes
